@@ -212,7 +212,11 @@ jobs:
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
+      
           git add -A
-          git commit -m "Rebrand documentation to HeyFred" || echo "No changes to commit"
-          git pull --rebase origin main
+          git commit -m "Rebrand documentation to ${{ inputs.brand_name }}" || echo "Nothing to commit"
+      
+          git fetch origin main
+          git rebase origin/main
+      
           git push origin HEAD:main

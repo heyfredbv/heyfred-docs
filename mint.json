@@ -204,6 +204,7 @@
           "pages": [
             "provisioning/sip-trunking/sip-integration",
             "provisioning/sip-trunking/twilio",
+            "provisioning/sip-trunking/voys",
             "provisioning/sip-trunking/zadarma"
           ]
         }

@@ -24,14 +24,14 @@
   },
   "topbarLinks": [{
     "name": "Home",
-    "url": "https://autocalls.ai"
+    "url": "https://heyfred.nl"
   }, {
     "name": "Support",
-    "url": "https://autocalls.ai/contact"
+    "url": "https://heyfred.nl/contact"
   }],
   "topbarCtaButton": {
     "name": "Dashboard",
-    "url": "https://app.autocalls.ai"
+    "url": "https://app.heyfred.nl"
   },
   "anchors": [{
     "name": "No-Code Automation",
@@ -52,7 +52,7 @@
   "navigation": [{
       "group": "Introduction",
       "pages": [
-        "introduction/what-is-autocalls",
+        "introduction/what-is-heyfred",
         "introduction/how-it-works",
         "introduction/key-terminology"
       ]
@@ -359,7 +359,7 @@
     {
       "group": "Calls Related",
       "pages": [
-        "automation-platform/calls-related/autocalls-tool",
+        "automation-platform/calls-related/heyfred-tool",
         "automation-platform/calls-related/common-integrations",
         "automation-platform/calls-related/sms-capabilities"
       ]
@@ -384,10 +384,10 @@
     }
   ],
   "footerSocials": {
-    "linkedin": "https://www.linkedin.com/company/autocalls-ai"
+    "linkedin": "https://www.linkedin.com/company/assistent-fred/"
   },
   "api": {
-    "baseUrl": "https://app.autocalls.ai/api/",
+    "baseUrl": "https://app.heyfred.nl/api/",
     "auth": {
       "method": "bearer"
     }

@@ -213,7 +213,7 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
       
-          git add -A
+          git add -A -- ':!.github/workflows/'
           git commit -m "Rebrand documentation to ${{ inputs.brand_name }}" || echo "Nothing to commit"
       
           git fetch origin main

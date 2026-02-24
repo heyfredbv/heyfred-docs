@@ -233,12 +233,33 @@ jobs:
       # Commit synced and rebranded docs
       - name: Commit synced docs
         run: |
+          set -e
+
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git add -A
+
+          # Stage everything except workflow files
+          git add -A -- ':!.github/workflows/'
+
           if git diff --staged --quiet; then
             echo "No changes to commit"
-          else
-            git commit -m "Sync docs from upstream - $(date +%Y-%m-%d)"
-            git push
+            exit 0
           fi
+
+          git commit -m "Sync docs from upstream - $(date +%Y-%m-%d)"
+
+          # Handle non-fast-forward races by rebasing and retrying push
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main || { git rebase --abort; exit 1; }
+
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+
+            echo "Push failed (attempt $i). Retrying..."
+            sleep 2
+          done
+
+          echo "Push failed after retries"
+          exit 1

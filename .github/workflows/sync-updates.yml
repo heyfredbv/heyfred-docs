@@ -235,34 +235,30 @@ jobs:
           include: "**/*.{json,mdx}"
 
       # Commit synced and rebranded docs
-      - name: Commit synced docs
+      - name: Commit synced docs (open PR)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -e
 
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
 
-          for i in 1 2 3 4 5; do
-            git fetch origin main
-            git rebase origin/main || { git rebase --abort; exit 1; }
+          git add -A -- ':!.github/workflows/'
 
-            git add -A -- ':!.github/workflows/'
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
 
-            if git diff --staged --quiet; then
-              echo "No changes to commit"
-              exit 0
-            fi
+          git commit -m "Sync docs from upstream - $(date +%Y-%m-%d)"
 
-            git commit -m "Sync docs from upstream - $(date +%Y-%m-%d)" || true
+          BRANCH="sync-docs/$(date +%Y-%m-%d)-${GITHUB_RUN_ID}"
+          git checkout -b "$BRANCH"
+          git push -u origin "$BRANCH"
 
-            if git push origin HEAD:main; then
-              exit 0
-            fi
-
-            echo "Push failed (attempt $i), undoing commit and retrying..."
-            git reset --soft HEAD~1 || true
-            sleep 3
-          done
-
-          echo "Push failed after retries"
-          exit 1
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "Sync docs from upstream ($(date +%Y-%m-%d))" \
+            --body "Automated sync from ${{ inputs.upstream_repo }}. Excludes .github/workflows and preserves brand.config.json + branding assets."

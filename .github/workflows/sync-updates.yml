@@ -236,7 +236,7 @@ jobs:
           include: "**/*.{json,mdx}"
 
       # Commit synced and rebranded docs
-            - name: Commit synced docs (open PR)
+      - name: Commit synced docs (open PR)
         env:
           GH_TOKEN: ${{ secrets.PR_PAT }}
         run: |

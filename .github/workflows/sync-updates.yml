@@ -236,7 +236,7 @@ jobs:
           include: "**/*.{json,mdx}"
 
       # Commit synced and rebranded docs
-      - name: Commit synced docs (open PR)
+            - name: Commit synced docs (open PR)
         env:
           GH_TOKEN: ${{ secrets.PR_PAT }}
         run: |
@@ -244,6 +244,11 @@ jobs:
 
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
+
+          BRANCH="sync-docs/$(date +%Y-%m-%d)-${GITHUB_RUN_ID}"
+
+          # Start a new branch BEFORE committing
+          git checkout -b "$BRANCH"
 
           git add -A -- ':!.github/workflows/'
 
@@ -253,9 +258,6 @@ jobs:
           fi
 
           git commit -m "Sync docs from upstream - $(date +%Y-%m-%d)"
-
-          BRANCH="sync-docs/$(date +%Y-%m-%d)-${GITHUB_RUN_ID}"
-          git checkout -b "$BRANCH"
           git push -u origin "$BRANCH"
 
           gh pr create \

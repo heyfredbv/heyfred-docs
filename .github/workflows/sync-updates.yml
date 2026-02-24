@@ -15,7 +15,7 @@ on:
 
 concurrency:
   group: sync-updates-main
-  cancel-in-progress: true  
+  cancel-in-progress: true
 
 jobs:
   sync:
@@ -62,8 +62,8 @@ jobs:
           git fetch upstream main
           
           # Get list of files from upstream, excluding workflow files and config
-          git checkout upstream/main -- . 2>/dev/null || git checkout upstream/main -- $(git ls-tree -r --name-only upstream/main | grep -v -E '^\.github/|^brand\.config\.json$')
-
+          git checkout upstream/main -- $(git ls-tree -r --name-only upstream/main | grep -v -E '^\.github/|^brand\.config\.json$')
+      
       # Restore partner's branding config and assets
       - name: Restore branding config and assets
         run: |
@@ -242,24 +242,25 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
 
-          git add -A -- ':!.github/workflows/'
-
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
-            exit 0
-          fi
-
-          git commit -m "Sync docs from upstream - $(date +%Y-%m-%d)"
-
           for i in 1 2 3 4 5; do
             git fetch origin main
             git rebase origin/main || { git rebase --abort; exit 1; }
+
+            git add -A -- ':!.github/workflows/'
+
+            if git diff --staged --quiet; then
+              echo "No changes to commit"
+              exit 0
+            fi
+
+            git commit -m "Sync docs from upstream - $(date +%Y-%m-%d)" || true
 
             if git push origin HEAD:main; then
               exit 0
             fi
 
-            echo "Push failed (attempt $i), retrying..."
+            echo "Push failed (attempt $i), undoing commit and retrying..."
+            git reset --soft HEAD~1 || true
             sleep 3
           done
 

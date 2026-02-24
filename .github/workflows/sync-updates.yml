@@ -23,6 +23,7 @@ jobs:
     if: ${{ inputs.confirm == 'update' }}
     permissions:
       contents: write
+      pull-requests: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -237,7 +238,7 @@ jobs:
       # Commit synced and rebranded docs
       - name: Commit synced docs (open PR)
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -e
 

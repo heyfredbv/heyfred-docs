@@ -18,3 +18,15 @@
 
 # Aangepaste content-pagina's
 whatsapp/automation.mdx
+
+# Eigen Voys SIP-trunking pagina (niet aanwezig bij Autocalls upstream)
+provisioning/sip-trunking/voys.mdx
+
+# Tutorial-pagina's: YouTube-video's verwijderd, eigen afbeeldingenmap gebruikt
+automation-platform/tutorials/gohighlevel-leads-automation.mdx
+automation-platform/tutorials/google-sheets-qualified-leads.mdx
+automation-platform/tutorials/google-sheets-sync.mdx
+automation-platform/tutorials/inbound-context-injection.mdx
+automation-platform/tutorials/outbound-form-call.mdx
+automation-platform/tutorials/post-call-email-automation.mdx
+automation-platform/tutorials/post-call-sms-automation.mdx

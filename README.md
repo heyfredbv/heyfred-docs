@@ -99,6 +99,27 @@ To preview documentation changes locally:
 - **Workflow fails**: Check the Actions log for error details
 - **Branding not applied**: Ensure you ran the "Rebrand Documentation" workflow first
 
+### Sync Workflow Permission Error
+
+If you see an error like `refusing to allow a GitHub App to create or update workflow`, you need to manually update your workflow files:
+
+**Step 1:** Go to the template repository workflow files:
+- [sync-updates.yml](https://github.com/Autocalls/documentation/blob/main/.github/workflows/sync-updates.yml)
+- [rebrand.yml](https://github.com/Autocalls/documentation/blob/main/.github/workflows/rebrand.yml)
+
+**Step 2:** For each file:
+1. Click the **"Raw"** button
+2. Select all and copy (Ctrl+A, Ctrl+C)
+
+**Step 3:** In your repository:
+1. Go to `.github/workflows/sync-updates.yml`
+2. Click the **pencil icon** (Edit)
+3. Delete all content and paste the new content
+4. Click **"Commit changes"**
+5. Repeat for `rebrand.yml`
+
+**Step 4:** Run the "Sync Updates" workflow again - it should work now
+
 ## Support
 
 For platform-related questions, contact your platform provider.

@@ -279,7 +279,9 @@ jobs:
       # Commit synced and rebranded docs
       - name: Commit synced docs (open PR)
         env:
-          GH_TOKEN: ${{ secrets.PR_PAT }}
+          # Use the built-in GITHUB_TOKEN (workflow has pull-requests: write)
+          # This is more reliable than a PAT for same-repo PR creation.
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -e
 
@@ -301,12 +303,14 @@ jobs:
           git commit -m "Sync docs from upstream - $(date +%Y-%m-%d)"
           git push -u origin "$BRANCH"
 
-          # Give GitHub's API a moment to register the new branch before
-          # creating the PR (avoids "Head sha can't be blank" race condition)
-          sleep 5
+          # Give GitHub's API time to register the new branch
+          sleep 10
 
-          gh pr create \
+          PR_URL=$(gh pr create \
+            --repo "$GITHUB_REPOSITORY" \
             --base main \
             --head "$BRANCH" \
             --title "Sync docs from upstream ($(date +%Y-%m-%d))" \
-            --body "Automated sync from ${{ inputs.upstream_repo }}. Excludes .github/workflows and preserves brand.config.json + branding assets."
+            --body "Automated sync from ${{ inputs.upstream_repo }}. Excludes .github/workflows and preserves brand.config.json + branding assets." \
+            2>&1) && echo "PR created: $PR_URL" \
+          || echo "PR creation failed - open it manually at: https://github.com/${GITHUB_REPOSITORY}/compare/main...${BRANCH}?expand=1"

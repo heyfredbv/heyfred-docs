@@ -1,0 +1,32 @@
+# .syncpreserve
+#
+# Bestanden en mappen die NOOIT worden overschreven tijdens een sync
+# vanuit de upstream template (Autocalls/documentation).
+#
+# Voeg hier elk bestand of elke map toe die je zelf hebt aangepast
+# en wilt behouden bij toekomstige updates.
+#
+# Syntax:
+#   - Één pad per regel (relatief aan de root van de repository)
+#   - Regels die beginnen met # zijn commentaar
+#   - Zowel bestanden als mappen zijn toegestaan
+#
+# Voorbeeld:
+#   whatsapp/automation.mdx
+#   introduction/custom-page.mdx
+#   resources/custom-images/
+
+# Aangepaste content-pagina's
+whatsapp/automation.mdx
+
+# Eigen Voys SIP-trunking pagina (niet aanwezig bij Autocalls upstream)
+provisioning/sip-trunking/voys.mdx
+
+# Tutorial-pagina's: YouTube-video's verwijderd, eigen afbeeldingenmap gebruikt
+automation-platform/tutorials/gohighlevel-leads-automation.mdx
+automation-platform/tutorials/google-sheets-qualified-leads.mdx
+automation-platform/tutorials/google-sheets-sync.mdx
+automation-platform/tutorials/inbound-context-injection.mdx
+automation-platform/tutorials/outbound-form-call.mdx
+automation-platform/tutorials/post-call-email-automation.mdx
+automation-platform/tutorials/post-call-sms-automation.mdx

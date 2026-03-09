@@ -1,0 +1,20 @@
+# .syncpreserve
+#
+# Bestanden en mappen die NOOIT worden overschreven tijdens een sync
+# vanuit de upstream template (Autocalls/documentation).
+#
+# Voeg hier elk bestand of elke map toe die je zelf hebt aangepast
+# en wilt behouden bij toekomstige updates.
+#
+# Syntax:
+#   - Één pad per regel (relatief aan de root van de repository)
+#   - Regels die beginnen met # zijn commentaar
+#   - Zowel bestanden als mappen zijn toegestaan
+#
+# Voorbeeld:
+#   whatsapp/automation.mdx
+#   introduction/custom-page.mdx
+#   resources/custom-images/
+
+# Aangepaste content-pagina's
+whatsapp/automation.mdx

@@ -279,9 +279,7 @@ jobs:
       # Commit synced and rebranded docs
       - name: Commit synced docs (open PR)
         env:
-          # Use the built-in GITHUB_TOKEN (workflow has pull-requests: write)
-          # This is more reliable than a PAT for same-repo PR creation.
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.PR_PAT }}
         run: |
           set -e
 

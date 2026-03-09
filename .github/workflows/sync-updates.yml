@@ -91,12 +91,12 @@ jobs:
         run: |
           cp /tmp/backup/brand.config.json brand.config.json
 
-          # Restore ALL custom resources: use merge (cp -r src/. dst/) so that
-          # new images added by upstream for new pages are kept, while all
-          # existing custom images (HeyFred screenshots etc.) are restored.
+          # Restore ALL custom resources: full replace from backup so that
+          # files the user deliberately deleted stay deleted (e.g. white-label
+          # images), and all custom screenshots/images are preserved.
           if [ -d "/tmp/backup/resources" ]; then
-            mkdir -p resources
-            cp -r /tmp/backup/resources/. resources/
+            rm -rf resources
+            cp -r /tmp/backup/resources resources
           fi
 
           # Restore favicon
@@ -300,6 +300,10 @@ jobs:
 
           git commit -m "Sync docs from upstream - $(date +%Y-%m-%d)"
           git push -u origin "$BRANCH"
+
+          # Give GitHub's API a moment to register the new branch before
+          # creating the PR (avoids "Head sha can't be blank" race condition)
+          sleep 5
 
           gh pr create \
             --base main \

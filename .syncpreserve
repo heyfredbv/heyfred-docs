@@ -19,6 +19,10 @@
 # Aangepaste content-pagina's
 whatsapp/automation.mdx
 
+# HeyFred-specifieke pagina's (vervangen de generieke Autocalls versies)
+introduction/what-is-heyfred.mdx
+automation-platform/calls-related/heyfred-tool.mdx
+
 # Eigen Voys SIP-trunking pagina (niet aanwezig bij Autocalls upstream)
 provisioning/sip-trunking/voys.mdx
 

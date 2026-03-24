@@ -253,30 +253,40 @@ jobs:
           include: "**/*.json"
 
       # Re-apply file renames
-      - name: Rename what-is-autocalls page
+      - name: Remove upstream what-is-autocalls page (replaced by custom what-is-heyfred)
         run: |
-          if [ -f "introduction/what-is-autocalls.mdx" ]; then
-            mv introduction/what-is-autocalls.mdx introduction/what-is-platform.mdx
-          fi
+          rm -f introduction/what-is-autocalls.mdx introduction/what-is-platform.mdx
 
-      - name: Update navigation for renamed what-is-autocalls
+      - name: Update navigation for what-is-autocalls
         uses: jacobtomlinson/gha-find-replace@v3
         with:
           find: "introduction/what-is-autocalls"
-          replace: "introduction/what-is-platform"
+          replace: "introduction/what-is-heyfred"
           include: "**/*.{json,mdx}"
 
-      - name: Rename autocalls-tool page
-        run: |
-          if [ -f "automation-platform/calls-related/autocalls-tool.mdx" ]; then
-            mv automation-platform/calls-related/autocalls-tool.mdx automation-platform/calls-related/platform-tool.mdx
-          fi
+      - name: Update navigation for what-is-platform
+        uses: jacobtomlinson/gha-find-replace@v3
+        with:
+          find: "introduction/what-is-platform"
+          replace: "introduction/what-is-heyfred"
+          include: "**/*.{json,mdx}"
 
-      - name: Update navigation for renamed autocalls-tool
+      - name: Remove upstream autocalls-tool page (replaced by custom heyfred-tool)
+        run: |
+          rm -f automation-platform/calls-related/autocalls-tool.mdx automation-platform/calls-related/platform-tool.mdx
+
+      - name: Update navigation for autocalls-tool
         uses: jacobtomlinson/gha-find-replace@v3
         with:
           find: "automation-platform/calls-related/autocalls-tool"
-          replace: "automation-platform/calls-related/platform-tool"
+          replace: "automation-platform/calls-related/heyfred-tool"
+          include: "**/*.{json,mdx}"
+
+      - name: Update navigation for platform-tool
+        uses: jacobtomlinson/gha-find-replace@v3
+        with:
+          find: "automation-platform/calls-related/platform-tool"
+          replace: "automation-platform/calls-related/heyfred-tool"
           include: "**/*.{json,mdx}"
 
       # Commit synced and rebranded docs

@@ -13,6 +13,9 @@ on:
         type: string
         default: "Autocalls/documentation"
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 concurrency:
   group: sync-updates-main
   cancel-in-progress: true

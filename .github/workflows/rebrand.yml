@@ -44,155 +44,89 @@ jobs:
       contents: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
-
-      # Step 1: URL replacements (most specific first to avoid partial matches)
-      - name: Replace app.autocalls.ai URLs
-        uses: jacobtomlinson/gha-find-replace@v3
-        with:
-          find: "https://app.autocalls.ai"
-          replace: "${{ inputs.dashboard_url }}"
-          include: "**/*.{json,mdx,md}"
-
-      - name: Replace support URL
-        uses: jacobtomlinson/gha-find-replace@v3
-        with:
-          find: "https://autocalls.ai/contact"
-          replace: "${{ inputs.support_url }}"
-          include: "**/*.{json,mdx,md}"
-
-      - name: Replace OG image URL
-        if: ${{ inputs.og_image_url != '' }}
-        uses: jacobtomlinson/gha-find-replace@v3
-        with:
-          find: "https://autocalls.ai/ogimage-en.jpg"
-          replace: "${{ inputs.og_image_url }}"
-          include: "**/*.{json,mdx,md}"
-
-      - name: Replace website URL
-        uses: jacobtomlinson/gha-find-replace@v3
-        with:
-          find: "https://autocalls.ai"
-          replace: "${{ inputs.website_url }}"
-          include: "**/*.{json,mdx,md}"
-
-      - name: Replace LinkedIn URL
-        if: ${{ inputs.linkedin_url != '' }}
-        uses: jacobtomlinson/gha-find-replace@v3
-        with:
-          find: "https://www.linkedin.com/company/autocalls-ai"
-          replace: "${{ inputs.linkedin_url }}"
-          include: "**/*.json"
-
-      - name: Remove LinkedIn if not provided
-        if: ${{ inputs.linkedin_url == '' }}
+      # Re-apply branding + full white-label in a single robust step.
+      #
+      # Why a shell step instead of gha-find-replace: the previous
+      # "**/*.{json,mdx}" include glob did NOT match root-level files, so every
+      # replacement targeting mint.json (colors, URLs, LinkedIn, API baseUrl,
+      # navigation) was silently skipped while each step still reported success.
+      # find + sed reliably covers both root and nested files.
+      - name: Apply branding and white-label
+        env:
+          NAME: ${{ inputs.brand_name }}
+          PRIMARY: ${{ inputs.primary_color }}
+          WEBSITE: ${{ inputs.website_url }}
+          DASHBOARD: ${{ inputs.dashboard_url }}
+          SUPPORT: ${{ inputs.support_url }}
+          LINKEDIN: ${{ inputs.linkedin_url }}
+          OGIMAGE: ${{ inputs.og_image_url }}
         run: |
-          # Remove the linkedin line from mint.json if no URL provided
-          sed -i '/"linkedin":/d' mint.json
+          set -euo pipefail
 
-      # Step 2: Brand name replacements in prose content
-      - name: Replace Autocalls.ai brand in content
-        uses: jacobtomlinson/gha-find-replace@v3
-        with:
-          find: "Autocalls.ai"
-          replace: "${{ inputs.brand_name }}"
-          include: "**/*.{mdx,md}"
+          # Derive bare host (e.g. mycompany.com) for technical white-labeling
+          WEB_HOST=$(printf '%s' "$WEBSITE" | sed -E 's#^https?://##; s#/.*$##')
+          REC_URL="https://recordings.${WEB_HOST}"
+          EMAIL="contact@${WEB_HOST}"
 
-      - name: Replace Autocalls brand in mint.json name
-        uses: jacobtomlinson/gha-find-replace@v3
-        with:
-          find: '"name": "Autocalls"'
-          replace: '"name": "${{ inputs.brand_name }}"'
-          include: "mint.json"
+          # Helper: apply a sed program to the right file set (root + nested,
+          # never .git/.github/brand.config.json). -r skips empty file lists.
+          all() { find . -type f \( -name '*.mdx' -o -name '*.json' \) \
+                    -not -path './.git/*' -not -path './.github/*' \
+                    -not -name 'brand.config.json' -print0 | xargs -0 -r sed -i "$@"; }
 
-      - name: Replace standalone Autocalls references
-        uses: jacobtomlinson/gha-find-replace@v3
-        with:
-          find: "the Autocalls team"
-          replace: "the ${{ inputs.brand_name }} team"
-          include: "**/*.{mdx,md}"
+          # --- Technical hostnames / URLs (most specific first) ---
+          all "s#https://app\.autocalls\.ai#${DASHBOARD}#g"
+          all "s#https://api\.autocalls\.ai#${DASHBOARD}#g"
+          all "s#https://automate\.autocalls\.ai#${DASHBOARD}#g"
+          all "s#https://recordings\.autocalls\.ai#${REC_URL}#g"
+          all "s#https://autocalls\.ai/contact#${SUPPORT}#g"
+          all "s#https://autocalls\.ai#${WEBSITE}#g"
+          all "s#[A-Za-z0-9._%+-]\+@autocalls\.ai#${EMAIL}#g"
+          # Any remaining bare "autocalls.ai" as visible link text -> host.
+          all "s#autocalls\.ai#${WEB_HOST}#g"
 
-      - name: Replace Autocalls system references
-        uses: jacobtomlinson/gha-find-replace@v3
-        with:
-          find: "the Autocalls system"
-          replace: "the ${{ inputs.brand_name }} system"
-          include: "**/*.{mdx,md}"
+          # --- OG image (optional) ---
+          if [ -n "$OGIMAGE" ]; then
+            all "s#https://autocalls\.ai/ogimage-en\.jpg#${OGIMAGE}#g"
+          fi
 
-      - name: Replace Autocalls platform references
-        uses: jacobtomlinson/gha-find-replace@v3
-        with:
-          find: "the Autocalls platform"
-          replace: "the ${{ inputs.brand_name }} platform"
-          include: "**/*.{mdx,md}"
+          # --- LinkedIn ---
+          if [ -n "$LINKEDIN" ]; then
+            all "s#https://www\.linkedin\.com/company/autocalls-ai#${LINKEDIN}#g"
+          else
+            sed -i '/"linkedin":/d' mint.json || true
+          fi
 
-      - name: Replace Autocalls API references
-        uses: jacobtomlinson/gha-find-replace@v3
-        with:
-          find: "Autocalls API"
-          replace: "${{ inputs.brand_name }} API"
-          include: "**/*.{mdx,md}"
+          # --- Brand name (prose). Do the ".ai" form first so we don't leave a
+          #     dangling ".ai". Case-sensitive: leaves lowercase technical tokens
+          #     (enum values, image filenames) intact. ---
+          all "s#Autocalls\.ai#${NAME}#g"
+          all "s#Autocalls#${NAME}#g"
 
-      - name: Replace Autocalls account references
-        uses: jacobtomlinson/gha-find-replace@v3
-        with:
-          find: "your Autocalls account"
-          replace: "your ${{ inputs.brand_name }} account"
-          include: "**/*.{mdx,md}"
+          # --- Colors (template greens -> primary). '|' delimiter because the
+          #     hex codes contain '#'. Case-insensitive for safety. ---
+          all "s|#06df4b|${PRIMARY}|Ig"
+          all "s|#65fe50|${PRIMARY}|Ig"
+          all "s|#01df4a|${PRIMARY}|Ig"
 
-      # Step 3: Color replacements
-      - name: Replace primary color
-        uses: jacobtomlinson/gha-find-replace@v3
-        with:
-          find: "#06df4b"
-          replace: "${{ inputs.primary_color }}"
-          include: "**/*.{json,mdx}"
-
-      - name: Replace dark/accent color
-        uses: jacobtomlinson/gha-find-replace@v3
-        with:
-          find: "#65fe50"
-          replace: "${{ inputs.primary_color }}"
-          include: "**/*.{json,mdx}"
-
-      - name: Replace anchor gradient start
-        uses: jacobtomlinson/gha-find-replace@v3
-        with:
-          find: "#01df4a"
-          replace: "${{ inputs.primary_color }}"
-          include: "**/*.json"
-
-      # Step 4: Rename files with 'autocalls' in the name
-      - name: Rename what-is-autocalls page
-        run: |
+          # --- Rename pages with 'autocalls' in the filename, update nav ---
           if [ -f "introduction/what-is-autocalls.mdx" ]; then
             mv introduction/what-is-autocalls.mdx introduction/what-is-platform.mdx
           fi
+          all "s#introduction/what-is-autocalls#introduction/what-is-platform#g"
 
-      - name: Update navigation for renamed what-is-autocalls
-        uses: jacobtomlinson/gha-find-replace@v3
-        with:
-          find: "introduction/what-is-autocalls"
-          replace: "introduction/what-is-platform"
-          include: "**/*.{json,mdx}"
-
-      - name: Rename autocalls-tool page
-        run: |
           if [ -f "automation-platform/calls-related/autocalls-tool.mdx" ]; then
             mv automation-platform/calls-related/autocalls-tool.mdx automation-platform/calls-related/platform-tool.mdx
           fi
+          all "s#automation-platform/calls-related/autocalls-tool#automation-platform/calls-related/platform-tool#g"
 
-      - name: Update navigation for renamed autocalls-tool
-        uses: jacobtomlinson/gha-find-replace@v3
-        with:
-          find: "automation-platform/calls-related/autocalls-tool"
-          replace: "automation-platform/calls-related/platform-tool"
-          include: "**/*.{json,mdx}"
+          echo "Branding + white-label applied."
 
-      # Step 5: Save branding config for future updates
+      # Save branding config for future updates
       - name: Save branding config
         run: |
           cat > brand.config.json << 'EOF'
@@ -207,16 +141,16 @@ jobs:
           }
           EOF
 
-      # Step 6: Commit all changes
+      # Commit all changes
       - name: Commit rebranded docs
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-      
+
           git add -A -- ':!.github/workflows/'
           git commit -m "Rebrand documentation to ${{ inputs.brand_name }}" || echo "Nothing to commit"
-      
+
           git fetch origin main
           git rebase origin/main
-      
+
           git push origin HEAD:main

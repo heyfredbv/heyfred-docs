@@ -25,8 +25,8 @@ assistant does it on your account:
     Inbound and outbound: system prompt, voice, language, model and call behaviour. Attach
     knowledgebases (your documents) and mid-call tools (live API lookups during a call).
   </Card>
-  <Card title="Run outbound campaigns" icon="bullhorn" href="/campaigns/index" color="#002C4B">
-    Create campaigns, add and manage leads, and start, pause or resume them.
+  <Card title="Run campaigns" icon="bullhorn" href="/campaigns/index" color="#002C4B">
+    Create call, WhatsApp, or SMS campaigns, add leads, set schedule windows, and start or pause them.
   </Card>
   <Card title="Review & improve" icon="magnifying-glass-chart" href="/outbound-calls/overview" color="#002C4B">
     List calls, read full transcripts and post-call evaluations, then update the assistant or its
@@ -35,6 +35,12 @@ assistant does it on your account:
   <Card title="Manage your account" icon="gear" href="/api-reference/introduction" color="#002C4B">
     Knowledgebases & documents, phone numbers & SIP trunks, WhatsApp senders & templates,
     conversations, folders, labels, API keys and your blacklist.
+  </Card>
+  <Card title="Build automations" icon="bolt" href="/automation-platform/introduction" color="#002C4B">
+    Describe what should happen around your calls — follow-ups, spreadsheet logging, callbacks,
+    lead intake — and it's built from a ready-made template or from scratch, proven with a real
+    test run, and attached to your assistant. Debug failed runs, retry them from the failed step,
+    and roll back a change that made things worse.
   </Card>
 </CardGroup>
 
@@ -74,14 +80,13 @@ https://app.heyfred.nl/mcp
         </Frame>
       </Step>
       <Step title="Open Connectors">
-        In the Customize panel, click **Connectors**.
+        In the settings panel that opens, click **Connectors** in the left sidebar.
         <Frame>
-          <img src="/resources/mcp/claude-2.png" alt="Open Connectors in the Claude Customize panel" />
+          <img src="/resources/mcp/claude-2.png" alt="Open Connectors in the Claude settings panel" />
         </Frame>
       </Step>
       <Step title="Add a custom connector">
-        Click the **+** button in the top-right of the Connectors panel, then choose **Add custom
-        connector**.
+        Click **Add** in the top-right of the Connectors panel, then choose **Add custom connector**.
         <Frame>
           <img src="/resources/mcp/claude-3.png" alt="Add a custom connector in Claude" />
         </Frame>
@@ -103,6 +108,11 @@ https://app.heyfred.nl/mcp
     </Steps>
   </Tab>
   <Tab title="ChatGPT">
+    <Note>
+      **Recommended: use the ChatGPT desktop app**, not the free web version. Custom connectors work
+      poorly on the free web version — tools may not load into your chat, and actions that place a
+      real phone call are blocked by OpenAI's safety layer in the browser (see the FAQ below).
+    </Note>
     <Steps>
       <Step title="Open Settings">
         In ChatGPT, click your name at the bottom-left, then **Settings**.
@@ -110,17 +120,23 @@ https://app.heyfred.nl/mcp
           <img src="/resources/mcp/chatgpt-1.png" alt="Open Settings in ChatGPT" />
         </Frame>
       </Step>
-      <Step title="Go to Apps → Advanced settings">
-        Open the **Apps** tab (connectors now live under "Apps"), then open **Advanced settings**.
+      <Step title="Turn on Developer mode">
+        Open **Security and login**, scroll down, and switch on **Developer mode**. It shows an
+        "Elevated risk" note — that's expected for custom connectors.
         <Frame>
-          <img src="/resources/mcp/chatgpt-2.png" alt="Open Apps then Advanced settings in ChatGPT" />
+          <img src="/resources/mcp/chatgpt-2.png" alt="Enable Developer mode under Security and login in ChatGPT" />
         </Frame>
       </Step>
-      <Step title="Enable Developer mode, then Create app">
-        Switch on **Developer mode** (this lets you add a custom connector), then click **Create app**
-        at the top.
+      <Step title="Open Plugins">
+        Back in ChatGPT, click **Plugins** in the left sidebar.
         <Frame>
-          <img src="/resources/mcp/chatgpt-3.png" alt="Enable Developer mode and Create app in ChatGPT" />
+          <img src="/resources/mcp/chatgpt-3.png" alt="Open Plugins in the ChatGPT sidebar" />
+        </Frame>
+      </Step>
+      <Step title="Click the + button">
+        It's in the top-right of the Plugins page, next to the search bar.
+        <Frame>
+          <img src="/resources/mcp/chatgpt-4.png" alt="Click the plus button on the Plugins page in ChatGPT" />
         </Frame>
       </Step>
       <Step title="Paste your link and create">
@@ -128,7 +144,7 @@ https://app.heyfred.nl/mcp
         **Authentication** to **OAuth**, tick _"I understand and want to continue"_, then **Create**.
         Sign in to your HeyFred account and approve.
         <Frame>
-          <img src="/resources/mcp/chatgpt-4.png" alt="Paste the HeyFred MCP URL and create the app in ChatGPT" />
+          <img src="/resources/mcp/chatgpt-5.png" alt="Paste the HeyFred MCP URL and create the app in ChatGPT" />
         </Frame>
       </Step>
     </Steps>
@@ -156,6 +172,10 @@ Start a new chat in Claude or ChatGPT and ask, for example:
   </Card>
   <Card title="Run" icon="bullhorn" color="#002C4B">
     "Set up an outbound campaign for this week's leads and start it."
+  </Card>
+  <Card title="Automate" icon="bolt" color="#002C4B">
+    "After every call, save qualified leads to my Google Sheet and email me when a caller asks for
+    a callback."
   </Card>
 </CardGroup>
 
